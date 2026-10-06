@@ -21,10 +21,11 @@ export interface PersistedPrefs {
  * - restores Release (`data-release`, `--realm: 1`) and reduce-motion (`data-motion`),
  * - marks first visits of the session with `data-loading`, which reveals the preloader.
  *   Reduced-motion visitors and visitors without storage never get the preloader.
+ * - `?static=1` sets `data-static`: time-frozen, motion-free rendering for visual tests.
  */
 export const bootInlineScript = `(function(){var r=document.documentElement;try{var raw=localStorage.getItem(${JSON.stringify(
   PREFS_STORAGE_KEY,
-)});var s=raw?((JSON.parse(raw)||{}).state||{}):{};if(s.release===true){r.setAttribute("data-release","true");r.style.setProperty("--realm","1")}var calm=s.motionPreference==="reduce";if(calm){r.setAttribute("data-motion","reduce")}if(!calm&&window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){calm=true}if(!calm&&!sessionStorage.getItem(${JSON.stringify(
+)});var s=raw?((JSON.parse(raw)||{}).state||{}):{};if(s.release===true){r.setAttribute("data-release","true");r.style.setProperty("--realm","1")}var calm=s.motionPreference==="reduce";if(calm){r.setAttribute("data-motion","reduce")}if(/[?&]static=1(&|$)/.test(location.search)){r.setAttribute("data-static","");calm=true}if(!calm&&window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){calm=true}if(!calm&&!sessionStorage.getItem(${JSON.stringify(
   PRELOADED_SESSION_KEY,
 )})){r.setAttribute("data-loading","")}}catch(e){}})()`;
 

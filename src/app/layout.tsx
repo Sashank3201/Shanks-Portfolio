@@ -2,20 +2,23 @@ import type { Metadata, Viewport } from "next";
 
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
-import { ScrollProgress } from "@/components/layout/scroll-progress";
-import { Cursor } from "@/components/overlays/cursor";
+import { DeferredOverlays } from "@/components/overlays/deferred-overlays";
 import { Grain } from "@/components/overlays/grain";
 import { Preloader } from "@/components/overlays/preloader";
-import { RouteTransition } from "@/components/overlays/route-transition";
 import { RealmBridge } from "@/components/providers/realm-bridge";
 import { SmoothScroll } from "@/components/providers/smooth-scroll";
 import { SkipLink } from "@/components/ui/skip-link";
 import { profile } from "@/content/profile";
 import { site } from "@/content/site";
+import { validateContent } from "@/content/validate";
 import { fontVariables } from "@/lib/fonts";
 import { bootInlineScript } from "@/lib/realm/prefs";
+import { StageLoader } from "@/webgl/stage-loader";
 
 import "@/styles/globals.css";
+
+// Fail the build on invalid content (runs while pages are prerendered).
+validateContent();
 
 export const metadata: Metadata = {
   metadataBase: site.url,
@@ -47,15 +50,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-dvh">
         <SkipLink />
+        <StageLoader />
         <RealmBridge />
         <SmoothScroll />
         <Header />
         {children}
         <Footer />
-        <ScrollProgress />
-        <RouteTransition />
         <Preloader />
-        <Cursor />
+        <DeferredOverlays />
         <Grain />
       </body>
     </html>

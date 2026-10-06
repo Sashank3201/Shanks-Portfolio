@@ -4,7 +4,7 @@ import { useRef, type ReactNode } from "react";
 
 import { gsap } from "@/lib/motion/gsap";
 import { useMotionGSAP } from "@/lib/motion/use-motion-gsap";
-import { cn } from "@/lib/utils/cn";
+import { cx } from "@/lib/utils/cx";
 
 interface MagneticProps {
   children: ReactNode;
@@ -55,7 +55,7 @@ export function Magnetic({ children, className, strength = 0.35 }: MagneticProps
   );
 
   return (
-    <div ref={ref} className={cn("inline-block will-change-transform", className)}>
+    <div ref={ref} className={cx("inline-block will-change-transform", className)}>
       {children}
     </div>
   );

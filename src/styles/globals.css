@@ -146,8 +146,8 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* No body background: the WebGL stage (z-index -1) must show through. :root paints the void. */
   body {
-    background-color: var(--color-void);
     color: var(--color-bone);
     font-family: var(--font-sans);
     font-synthesis: none;
@@ -343,5 +343,26 @@
   .getsuga-blade {
     filter: drop-shadow(0 0 10px var(--color-rim))
       drop-shadow(0 0 32px color-mix(in oklch, var(--color-reiatsu) 70%, transparent));
+  }
+}
+
+@layer components {
+  /* ── WebGL stage hand-off ────────────────────────────────────────────────── */
+  .stage {
+    opacity: 0;
+    transition: opacity 1.2s var(--ease-drift);
+  }
+
+  :root[data-webgl="ready"] .stage {
+    opacity: 1;
+  }
+
+  /* Once WebGL draws the eclipse, the CSS one steps aside (the anchor still positions it). */
+  [data-eclipse-anchor] > * {
+    transition: opacity 0.8s var(--ease-drift);
+  }
+
+  :root[data-webgl="ready"] [data-eclipse-anchor] > * {
+    opacity: 0;
   }
 }

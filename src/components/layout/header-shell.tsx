@@ -4,7 +4,7 @@ import { useRef, type ReactNode } from "react";
 
 import { EASE, ScrollTrigger, gsap } from "@/lib/motion/gsap";
 import { useMotionGSAP } from "@/lib/motion/use-motion-gsap";
-import { cn } from "@/lib/utils/cn";
+import { cx } from "@/lib/utils/cx";
 
 /**
  * Fixed header behaviour: a scrim fades in once the page has scrolled (legibility over content),
@@ -52,7 +52,7 @@ export function HeaderShell({ children, className }: { children: ReactNode; clas
     <header
       ref={ref}
       data-scrolled="false"
-      className={cn(
+      className={cx(
         "pointer-events-none fixed inset-x-0 top-0 z-(--z-header)",
         "before:absolute before:inset-x-0 before:top-0 before:h-32 before:bg-linear-to-b before:from-void before:via-void/70 before:to-transparent before:opacity-0 before:transition-opacity before:duration-500",
         "data-[scrolled=true]:before:opacity-100",

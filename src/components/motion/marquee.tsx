@@ -5,7 +5,7 @@ import { useRef, type ReactNode } from "react";
 import { gsap } from "@/lib/motion/gsap";
 import { getLenis } from "@/lib/motion/scroll";
 import { useMotionGSAP } from "@/lib/motion/use-motion-gsap";
-import { cn } from "@/lib/utils/cn";
+import { cx } from "@/lib/utils/cx";
 import { damp } from "@/lib/utils/math";
 
 interface MarqueeProps {
@@ -60,7 +60,7 @@ export function Marquee({ children, className, speed = 60 }: MarqueeProps) {
   );
 
   return (
-    <div ref={rootRef} className={cn("overflow-hidden", className)}>
+    <div ref={rootRef} className={cx("overflow-hidden", className)}>
       <div ref={trackRef} className="flex w-max will-change-transform">
         <div className="flex shrink-0">{children}</div>
         <div className="flex shrink-0" aria-hidden="true">

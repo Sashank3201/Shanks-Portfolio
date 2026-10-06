@@ -13,6 +13,7 @@ describe("ui store", () => {
       sectionRealm: 0,
       systemReducedMotion: false,
       menuOpen: false,
+      staticMode: false,
     });
   });
 

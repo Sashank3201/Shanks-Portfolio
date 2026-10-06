@@ -1,10 +1,13 @@
-import { profileSchema } from "./schema";
+import type { Profile } from "./schema";
 
 /**
  * Identity shown across the site, the résumé and structured data.
+ * Plain typed data (safe to import from client code); validated at build time by
+ * `content/validate.ts` and in `content/content.test.ts`.
+ *
  * TODO(content): replace the placeholder values with real details.
  */
-export const profile = profileSchema.parse({
+export const profile: Profile = {
   name: "Shanks",
   katakana: "シャンクス",
   role: "Creative Developer",
@@ -14,4 +17,4 @@ export const profile = profileSchema.parse({
   email: "hello@example.com",
   availability: "Open to select collaborations",
   socials: [{ label: "GitHub", href: "https://github.com/Sashank3201", handle: "@Sashank3201" }],
-});
+};

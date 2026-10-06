@@ -3,8 +3,9 @@
 import { useRef } from "react";
 
 import { gsap, KATAKANA_GLYPHS } from "@/lib/motion/gsap";
+import { loadScrambleText } from "@/lib/motion/lazy-plugins";
 import { useMotionGSAP } from "@/lib/motion/use-motion-gsap";
-import { cn } from "@/lib/utils/cn";
+import { cx } from "@/lib/utils/cx";
 
 interface ScrambleTextProps {
   text: string;
@@ -33,13 +34,16 @@ export function ScrambleText({
       const element = ref.current;
       if (!element || reduced) return;
 
-      const scramble = () =>
-        gsap.to(element, {
-          duration,
-          delay,
-          ease: "none",
-          scrambleText: { text, chars: KATAKANA_GLYPHS, revealDelay: 0.25, speed: 0.6 },
-        });
+      const scramble = () => {
+        void loadScrambleText().then(() =>
+          gsap.to(element, {
+            duration,
+            delay,
+            ease: "none",
+            scrambleText: { text, chars: KATAKANA_GLYPHS, revealDelay: 0.25, speed: 0.6 },
+          }),
+        );
+      };
 
       if (trigger === "hover") {
         const parent = element.parentElement ?? element;
@@ -64,7 +68,7 @@ export function ScrambleText({
   );
 
   return (
-    <span className={cn("relative inline-block", className)}>
+    <span className={cx("relative inline-block", className)}>
       <span className="sr-only">{text}</span>
       <span ref={ref} aria-hidden="true">
         {text}

@@ -28,6 +28,8 @@ export interface UiState extends PersistedPrefs {
   menuOpen: boolean;
   bootPhase: BootPhase;
   routePhase: RoutePhase;
+  /** `?static=1`: deterministic, motion-free rendering for visual regression tests. */
+  staticMode: boolean;
 
   setRelease: (release: boolean) => void;
   toggleRelease: () => void;
@@ -49,6 +51,10 @@ function systemPrefersReducedMotion(): boolean {
     typeof window.matchMedia === "function" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
+}
+
+function initialStaticMode(): boolean {
+  return typeof document !== "undefined" && document.documentElement.hasAttribute("data-static");
 }
 
 /** The boot script marks first visits with `data-loading`; everyone else starts ready. */
@@ -73,6 +79,7 @@ export const useUiStore = create<UiState>()(
       menuOpen: false,
       bootPhase: initialBootPhase(),
       routePhase: "idle",
+      staticMode: initialStaticMode(),
 
       setRelease: (release) => {
         set({ release });
@@ -117,7 +124,7 @@ export const selectRealmTarget = (state: UiState): number =>
 
 /** True when either the OS or the in-site toggle asks for reduced motion. */
 export const selectReducedMotion = (state: UiState): boolean =>
-  state.motionPreference === "reduce" || state.systemReducedMotion;
+  state.motionPreference === "reduce" || state.systemReducedMotion || state.staticMode;
 
 /** Imperative read for animation setup code that runs outside React's render. */
 export function isMotionReduced(): boolean {

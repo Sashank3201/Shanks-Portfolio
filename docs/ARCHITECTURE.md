@@ -45,6 +45,39 @@ GPU tier detection plus a runtime performance monitor choose the pixel ratio (1�
 counts, noise octaves, bloom resolution and whether the fluid simulation runs. Mobile gets a
 lighter sky without the post-processing chunk. Reduced motion renders a single still frame.
 
+## WebGL stage
+
+- One persistent `<Canvas>` (single GL context) mounted lazily behind the content
+  (`fixed`, `z-index: -1`; the body stays transparent so it shows through).
+- **Sky** — one full-screen triangle running `shaders/sky.ts`: void gradient, domain-warped smoke
+  lit by the eclipse, corona + streamers, ring/limb and the moon that swings from annulus to
+  crescent with the realm, the SDF spire with windows, outline and beam.
+- **Ash field** — screen-space point sprites; ash drifts down in the Shinigami realm, embers rise
+  in the Hollow (flow is integrated on the CPU so direction changes never jump).
+- **Composition** (`webgl/composition.ts`, unit-tested) maps scroll + the hero's
+  `[data-eclipse-anchor]` rect to eclipse/spire placement, so the WebGL eclipse lands exactly
+  where the CSS eclipse and the preloader ring are.
+- **Hand-off** — until the first frame (and forever without WebGL) the CSS eclipse carries the
+  look; `html[data-webgl]` is `ready | fallback | lost | failed`.
+- **No GPU, no WebGL** — software rasterisers (SwiftShader, llvmpipe) and Save-Data keep the CSS
+  eclipse: a full-screen shader on the CPU would stall the main thread.
+
+Query flags: `?static=1` (frozen, motion-free frames for visual tests), `?webgl=force` (run the
+stage even on software renderers — WebGL E2E tests), `?debug` (Leva + r3f-perf, lazy-loaded).
+
+## Performance (measured, gzip)
+
+| Budget                       | Target   | Now      |
+| ---------------------------- | -------- | -------- |
+| Initial JS (home)            | ≤ 200 KB | 200 KB   |
+| Deferred WebGL chunk         | ≤ 300 KB | 275 KB   |
+| Framework floor (React+Next) | —        | ≈ 125 KB |
+
+Kept lean by: content as plain typed data (Zod runs at build time only), `cx` instead of `cn`
+in client code (tailwind-merge stays server-side), first-visit-only sequences (preloader, hero
+intro, DrawSVG, ScrambleText) loaded on demand, overlays loaded after hydration. A unit test
+walks the client module graph and fails if tailwind-merge, Zod or server-only code is reachable.
+
 ## Routes
 
 | Route                    | Notes                                              |

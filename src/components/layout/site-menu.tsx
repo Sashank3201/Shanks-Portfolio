@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 
 import { TransitionLink } from "@/components/ui/transition-link";
 import { pageNav, sectionNav } from "@/content/navigation";
-import { cn } from "@/lib/utils/cn";
+import { cx } from "@/lib/utils/cx";
 import { useUiStore } from "@/stores/ui-store";
 
 import { MotionToggle } from "./motion-toggle";
@@ -56,7 +56,7 @@ export function SiteMenu() {
         ref={dialogRef}
         aria-label="Site menu"
         onClose={close}
-        className={cn(
+        className={cx(
           "m-0 h-dvh max-h-none w-full max-w-none bg-void/95 text-bone backdrop-blur-md",
           "opacity-0 transition-[opacity,display,overlay] transition-discrete duration-500 ease-reiatsu",
           "backdrop:bg-transparent open:opacity-100 starting:open:opacity-0",

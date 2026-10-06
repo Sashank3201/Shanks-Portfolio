@@ -79,3 +79,29 @@ test.describe("navigation choreography", () => {
     await expect(header).toBeInViewport({ timeout: 5_000 });
   });
 });
+
+test.describe("webgl stage", () => {
+  test("keeps the CSS eclipse on software renderers", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveAttribute("data-webgl", "fallback");
+    await expect(page.locator(".stage")).toHaveCount(0);
+    await expect(page.locator("[data-eclipse-anchor] > *").first()).toHaveCSS("opacity", "1");
+  });
+
+  // Headless browsers rasterise in software, where the site deliberately keeps the CSS eclipse;
+  // ?webgl=force opts these tests into the WebGL stage regardless.
+  test("draws its first frame and takes over from the CSS eclipse", async ({ page }) => {
+    await page.goto("/?webgl=force");
+    const html = page.locator("html");
+    await expect(html).toHaveAttribute("data-webgl", "ready", { timeout: 20_000 });
+    await expect(page.locator(".stage canvas")).toBeVisible();
+    // The CSS eclipse steps aside once WebGL draws (its anchor keeps positioning it).
+    await expect(page.locator("[data-eclipse-anchor] > *").first()).toHaveCSS("opacity", "0");
+  });
+
+  test("renders a frozen frame in static mode", async ({ page }) => {
+    await page.goto("/?static=1&webgl=force");
+    await expect(page.locator("html")).toHaveAttribute("data-static", "");
+    await expect(page.locator("html")).toHaveAttribute("data-webgl", "ready", { timeout: 20_000 });
+  });
+});

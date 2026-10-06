@@ -1,7 +1,7 @@
 "use client";
 
 import { MaskGlyph } from "@/components/illustrations/mask-glyph";
-import { cn } from "@/lib/utils/cn";
+import { cx } from "@/lib/utils/cx";
 import { useUiStore } from "@/stores/ui-store";
 
 /**
@@ -17,7 +17,7 @@ export function RealmToggle({ className }: { className?: string }) {
       type="button"
       aria-pressed={release}
       onClick={toggleRelease}
-      className={cn(
+      className={cx(
         "group/release inline-flex h-10 items-center gap-2.5 rounded-full border px-4 label",
         "transition-[color,border-color,background-color,box-shadow] duration-500 ease-reiatsu",
         release
@@ -27,7 +27,7 @@ export function RealmToggle({ className }: { className?: string }) {
       )}
     >
       <MaskGlyph
-        className={cn(
+        className={cx(
           "size-4 transition-[color,transform] duration-500 ease-reiatsu",
           release ? "scale-110 text-reiatsu" : "text-ash-400 group-hover/release:text-bone",
         )}

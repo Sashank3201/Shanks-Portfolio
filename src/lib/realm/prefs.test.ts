@@ -32,7 +32,7 @@ describe("boot inline script", () => {
   afterEach(() => {
     localStorage.clear();
     sessionStorage.clear();
-    for (const attribute of ["data-release", "data-motion", "data-loading"]) {
+    for (const attribute of ["data-release", "data-motion", "data-loading", "data-static"]) {
       root.removeAttribute(attribute);
     }
     root.style.removeProperty("--realm");
@@ -73,6 +73,15 @@ describe("boot inline script", () => {
     runBootScript();
     expect(root.getAttribute("data-motion")).toBe("reduce");
     expect(root.hasAttribute("data-loading")).toBe(false);
+  });
+
+  it("freezes the experience for visual tests with ?static=1", () => {
+    mockSystemMotion(false);
+    window.history.replaceState(null, "", "/?static=1");
+    runBootScript();
+    expect(root.hasAttribute("data-static")).toBe(true);
+    expect(root.hasAttribute("data-loading")).toBe(false);
+    window.history.replaceState(null, "", "/");
   });
 
   it("survives corrupt storage", () => {
