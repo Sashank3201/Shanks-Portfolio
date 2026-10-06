@@ -213,3 +213,135 @@
     0 0 0.4em color-mix(in oklch, var(--color-glow) 35%, transparent),
     0 0 1.6em color-mix(in oklch, var(--color-accent) 25%, transparent);
 }
+
+@layer components {
+  /* ── Preloader ─────────────────────────────────────────────────────────────
+   * Only rendered visible when the boot script marks a first visit (data-loading). A CSS
+   * failsafe lifts it and unlocks scrolling even if the JavaScript bundle never runs. */
+  .preloader {
+    display: none;
+  }
+
+  :root[data-loading] {
+    overflow: hidden;
+    animation: unlock-scroll 0s 7s forwards;
+  }
+
+  :root[data-loading] .preloader {
+    display: grid;
+    animation: preloader-failsafe 0.6s 7s forwards;
+  }
+
+  @keyframes unlock-scroll {
+    to {
+      overflow: visible;
+    }
+  }
+
+  @keyframes preloader-failsafe {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* ── Custom cursor ───────────────────────────────────────────────────────── */
+  :root.has-cursor,
+  :root.has-cursor * {
+    cursor: none;
+  }
+
+  :root.has-cursor :is(input, textarea, [contenteditable="true"]) {
+    cursor: text;
+  }
+
+  .cursor {
+    opacity: 0;
+    transition: opacity 0.3s var(--ease-drift);
+  }
+
+  .cursor[data-visible="true"] {
+    opacity: 1;
+  }
+
+  .cursor[data-variant="text"] {
+    opacity: 0;
+  }
+
+  .cursor-dot {
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 9999px;
+    background-color: var(--color-bone);
+    transition: scale 0.3s var(--ease-reiatsu);
+  }
+
+  .cursor-ring {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+  }
+
+  .cursor-ring::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in oklch, var(--color-accent) 65%, transparent);
+    transition:
+      scale 0.5s var(--ease-reiatsu),
+      background-color 0.5s var(--ease-reiatsu),
+      border-color 0.5s var(--ease-reiatsu);
+  }
+
+  .cursor-label {
+    position: relative;
+    color: var(--color-bone);
+    opacity: 0;
+    scale: 0.6;
+    transition:
+      opacity 0.3s var(--ease-reiatsu),
+      scale 0.5s var(--ease-reiatsu);
+  }
+
+  .cursor[data-variant="link"] .cursor-ring::before {
+    scale: 1.6;
+    border-color: var(--color-accent);
+  }
+
+  .cursor[data-variant="link"] .cursor-dot {
+    scale: 0;
+  }
+
+  .cursor[data-variant="view"] .cursor-ring::before {
+    scale: 2.4;
+    border-color: var(--color-accent);
+    background-color: color-mix(in oklch, var(--color-accent) 18%, transparent);
+  }
+
+  .cursor[data-variant="view"] .cursor-dot {
+    scale: 0;
+  }
+
+  .cursor[data-variant="view"] .cursor-label {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .cursor[data-pressed="true"] .cursor-ring::before {
+    scale: 0.8;
+  }
+
+  /* ── Route transition ────────────────────────────────────────────────────── */
+  .route-transition[data-active="true"] {
+    pointer-events: auto;
+  }
+
+  .getsuga-blade {
+    filter: drop-shadow(0 0 10px var(--color-rim))
+      drop-shadow(0 0 32px color-mix(in oklch, var(--color-reiatsu) 70%, transparent));
+  }
+}

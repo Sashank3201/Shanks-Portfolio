@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
+import { TransitionLink } from "@/components/ui/transition-link";
 import { pageNav, sectionNav } from "@/content/navigation";
 import { cn } from "@/lib/utils/cn";
 import { useUiStore } from "@/stores/ui-store";
@@ -77,8 +77,9 @@ export function SiteMenu() {
             <ul className="space-y-4">
               {sectionNav.map((item) => (
                 <li key={item.href}>
-                  <Link
+                  <TransitionLink
                     href={item.href}
+                    transitionLabel={item.label}
                     onClick={close}
                     className="group flex items-baseline gap-4 font-display text-display-md text-bone"
                   >
@@ -86,20 +87,21 @@ export function SiteMenu() {
                       {item.numeral}
                     </span>
                     <span className="transition-colors group-hover:text-accent">{item.label}</span>
-                  </Link>
+                  </TransitionLink>
                 </li>
               ))}
             </ul>
             <ul className="mt-12 flex gap-8">
               {pageNav.map((item) => (
                 <li key={item.href}>
-                  <Link
+                  <TransitionLink
                     href={item.href}
+                    transitionLabel={item.label}
                     onClick={close}
                     className="label text-ash-200 transition-colors hover:text-bone"
                   >
                     {item.label}
-                  </Link>
+                  </TransitionLink>
                 </li>
               ))}
             </ul>

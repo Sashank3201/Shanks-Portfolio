@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
 
+import { SplitReveal } from "@/components/motion/split-reveal";
 import { cn } from "@/lib/utils/cn";
 
 import { KanjiIndex } from "./kanji-index";
+
+const TITLE_CLASS = "max-w-5xl font-display text-display-lg text-balance";
 
 export interface SectionProps {
   id: string;
@@ -47,9 +50,15 @@ export function Section({
           <span aria-hidden="true" className="h-px w-12 bg-ash-800" />
           <p className="label text-ash-400">{eyebrow}</p>
         </header>
-        <h2 id={titleId} className="max-w-5xl font-display text-display-lg text-balance">
-          {title}
-        </h2>
+        {typeof title === "string" ? (
+          <SplitReveal as="h2" id={titleId} className={TITLE_CLASS}>
+            {title}
+          </SplitReveal>
+        ) : (
+          <h2 id={titleId} className={TITLE_CLASS}>
+            {title}
+          </h2>
+        )}
         {children}
       </div>
     </section>

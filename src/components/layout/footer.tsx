@@ -9,7 +9,7 @@ export function Footer() {
 
   return (
     <footer className="relative border-t border-ash-900">
-      <div className="container-site flex flex-col gap-10 py-12 md:flex-row md:items-end md:justify-between">
+      <div className="container-site flex flex-col gap-10 pt-12 pb-28 md:flex-row md:items-end md:justify-between md:pr-24 md:pb-12">
         <div className="space-y-3">
           <p className="font-display text-title text-bone">{profile.tagline}</p>
           <p className="label text-ash-400">

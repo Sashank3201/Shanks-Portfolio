@@ -60,6 +60,11 @@ const eslintConfig = defineConfig([
     },
   },
   {
+    // Playwright fixtures call `use()`, which the React hooks rule mistakes for a hook.
+    files: ["tests/e2e/**/*.ts"],
+    rules: { "react-hooks/rules-of-hooks": "off" },
+  },
+  {
     // Config files are plain JS/ESM and not part of the TS project.
     files: ["**/*.{js,mjs,cjs}"],
     extends: [tseslint.configs.disableTypeChecked],

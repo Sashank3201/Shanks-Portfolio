@@ -1,11 +1,17 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { PREFS_STORAGE_KEY, PREFS_VERSION, applyPrefsToRoot, prefsInlineScript } from "./prefs";
+import {
+  PRELOADED_SESSION_KEY,
+  PREFS_STORAGE_KEY,
+  PREFS_VERSION,
+  applyPrefsToRoot,
+  bootInlineScript,
+} from "./prefs";
 
-function runInlineScript() {
+function runBootScript() {
   // The script is a self-contained IIFE string shipped in <head>; evaluate it as the browser would.
   // eslint-disable-next-line @typescript-eslint/no-implied-eval -- intentional: testing the shipped string
-  const script = new Function(prefsInlineScript) as () => void;
+  const script = new Function(bootInlineScript) as () => void;
   script();
 }
 
@@ -13,40 +19,66 @@ function store(state: unknown) {
   localStorage.setItem(PREFS_STORAGE_KEY, JSON.stringify({ state, version: PREFS_VERSION }));
 }
 
-describe("prefs inline script", () => {
+function mockSystemMotion(reduce: boolean) {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn((query: string) => ({ matches: reduce && query.includes("reduce"), media: query })),
+  );
+}
+
+describe("boot inline script", () => {
   const root = document.documentElement;
 
   afterEach(() => {
     localStorage.clear();
-    root.removeAttribute("data-release");
-    root.removeAttribute("data-motion");
+    sessionStorage.clear();
+    for (const attribute of ["data-release", "data-motion", "data-loading"]) {
+      root.removeAttribute(attribute);
+    }
     root.style.removeProperty("--realm");
   });
 
-  it("does nothing for first-time visitors", () => {
-    runInlineScript();
+  it("shows the preloader to first-time visitors", () => {
+    mockSystemMotion(false);
+    runBootScript();
+    expect(root.hasAttribute("data-loading")).toBe(true);
     expect(root.hasAttribute("data-release")).toBe(false);
     expect(root.hasAttribute("data-motion")).toBe(false);
+  });
+
+  it("skips the preloader once it has played this session", () => {
+    mockSystemMotion(false);
+    sessionStorage.setItem(PRELOADED_SESSION_KEY, "1");
+    runBootScript();
+    expect(root.hasAttribute("data-loading")).toBe(false);
+  });
+
+  it("skips the preloader when the OS asks for reduced motion", () => {
+    mockSystemMotion(true);
+    runBootScript();
+    expect(root.hasAttribute("data-loading")).toBe(false);
   });
 
   it("restores the Release realm before paint", () => {
+    mockSystemMotion(false);
     store({ release: true, motionPreference: "system" });
-    runInlineScript();
+    runBootScript();
     expect(root.getAttribute("data-release")).toBe("true");
     expect(root.style.getPropertyValue("--realm")).toBe("1");
-    expect(root.hasAttribute("data-motion")).toBe(false);
   });
 
-  it("restores the reduce-motion preference", () => {
+  it("restores the in-site reduce-motion preference and skips the preloader", () => {
+    mockSystemMotion(false);
     store({ release: false, motionPreference: "reduce" });
-    runInlineScript();
+    runBootScript();
     expect(root.getAttribute("data-motion")).toBe("reduce");
-    expect(root.hasAttribute("data-release")).toBe(false);
+    expect(root.hasAttribute("data-loading")).toBe(false);
   });
 
   it("survives corrupt storage", () => {
+    mockSystemMotion(false);
     localStorage.setItem(PREFS_STORAGE_KEY, "{not json");
-    expect(runInlineScript).not.toThrow();
+    expect(runBootScript).not.toThrow();
   });
 
   it("matches the runtime applier", () => {
