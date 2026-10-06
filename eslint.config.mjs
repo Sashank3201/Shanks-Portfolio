@@ -50,9 +50,9 @@ const eslintConfig = defineConfig([
       "import/order": [
         "error",
         {
-          groups: ["builtin", "external", "internal", ["parent", "sibling", "index"], "type"],
+          // Type-only imports sort with their module rather than in a separate trailing group.
+          groups: ["builtin", "external", "internal", ["parent", "sibling", "index"]],
           pathGroups: [{ pattern: "@/**", group: "internal" }],
-          pathGroupsExcludedImportTypes: ["type"],
           "newlines-between": "always",
           alphabetize: { order: "asc", caseInsensitive: true },
         },
