@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #050507;
+  --color-bone: #ecebe6;
+  --color-ash: #8b8b96;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-void);
+    color: var(--color-bone);
+  }
+}
