@@ -90,6 +90,11 @@ Authoring rules:
   cover is a procedural scene (eclipse, cleaver, gate or mask with rim light and smoke) that
   burns through to crimson from where the pointer enters, fringes splitting as the page moves.
   Phones and reduced motion keep a stacked grid; without WebGL the SVG covers stand in.
+- **Chapters**: each opens like an anime title card — its kanji enormous and outlined behind
+  the title, drifting against the scroll. About is a split (the bio lights up in large serif
+  type while the mask draws, sticky, beside it); Path runs a lightning bolt down the chapter
+  that ignites each milestone and its outlined year; Arsenal turns a sealing circle of skills
+  (rings, seals, an eight-point star around 技) beside the readable list.
 - **Release mark** (`LogoMark`): the header crescent morphs into the horned mask (MorphSVG,
   expo.inOut) as the colour runs to crimson; the eye slits open last. Reduced motion crossfades.
 - **Reiatsu flames**: licking crimson flames at the figure's neck, wrists and ankles, burning

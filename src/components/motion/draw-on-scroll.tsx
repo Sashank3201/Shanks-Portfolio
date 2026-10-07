@@ -16,6 +16,11 @@ interface DrawOnScrollProps {
   /** ScrollTrigger start, and the end of the scrubbed range. */
   start?: string;
   end?: string;
+  /**
+   * Measure the scroll range on the closest ancestor matching this selector instead of the art
+   * itself — e.g. "section" for art that sits sticky while its chapter scrolls past.
+   */
+  trigger?: string;
 }
 
 /**
@@ -30,6 +35,7 @@ export function DrawOnScroll({
   duration = 2.4,
   start = "top 80%",
   end = "center 55%",
+  trigger: triggerSelector,
 }: DrawOnScrollProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -37,6 +43,7 @@ export function DrawOnScroll({
     ({ reduced, contextSafe }) => {
       const root = ref.current;
       if (!root || reduced) return;
+      const trigger = (triggerSelector ? root.closest(triggerSelector) : null) ?? root;
       const strokes = gsap.utils.toArray<SVGGraphicsElement>("[data-draw]", root);
       if (strokes.length === 0) return;
       const details = gsap.utils.toArray<SVGGraphicsElement>("[data-draw-fade]", root);
@@ -50,7 +57,7 @@ export function DrawOnScroll({
         const stagger = { amount: duration * 0.35 };
         const timeline = gsap.timeline({
           paused: !scrub,
-          scrollTrigger: scrub ? { trigger: root, start, end, scrub: 0.8 } : undefined,
+          scrollTrigger: scrub ? { trigger, start, end, scrub: 0.8 } : undefined,
         });
         // Strokes stay hidden until their turn: a zero-length dash still paints round caps.
         timeline
@@ -74,7 +81,7 @@ export function DrawOnScroll({
 
         if (!scrub) {
           ScrollTrigger.create({
-            trigger: root,
+            trigger,
             start,
             once: true,
             onEnter: () => {
@@ -95,7 +102,7 @@ export function DrawOnScroll({
         active = false;
       };
     },
-    { scope: ref, dependencies: [scrub, duration, start, end] },
+    { scope: ref, dependencies: [scrub, duration, start, end, triggerSelector] },
   );
 
   return (

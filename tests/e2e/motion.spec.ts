@@ -41,7 +41,7 @@ test.describe("hero dive", () => {
       1,
     );
     // Past the pin, the next chapter is reachable and the hero copy has gone.
-    await page.locator("#about").scrollIntoViewIfNeeded();
+    await page.locator("#about-title").scrollIntoViewIfNeeded();
     await expect(page.locator("#about-title")).toBeInViewport({ timeout: 5_000 });
   });
 

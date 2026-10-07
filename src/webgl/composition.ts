@@ -47,8 +47,9 @@ export function toSky(x: number, y: number, width: number, height: number) {
 /** Resting spot (top-right, small) used once the hero has gone and on other pages. */
 function restingEclipse(aspect: number) {
   const portrait = aspect < 0.8;
+  // Portrait screens tuck it into the top corner, small, so it never sits behind the copy.
   return portrait
-    ? { x: 0.25 * aspect, y: 0.36, radius: 0.07 }
+    ? { x: 0.3 * aspect, y: 0.39, radius: 0.045 }
     : { x: 0.3 * aspect, y: 0.3, radius: 0.085 };
 }
 

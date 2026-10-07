@@ -451,3 +451,88 @@
     }
   }
 }
+
+@layer components {
+  /* ── Chapter glyph ─────────────────────────────────────────────────────────
+   * The chapter's kanji at title-card scale: outlined in the realm accent, barely there. */
+  .chapter-glyph {
+    font-size: clamp(14rem, 36vw, 34rem);
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in oklch, var(--color-accent) 30%, transparent);
+    opacity: 0.9;
+  }
+}
+
+@layer components {
+  /* ── Path ──────────────────────────────────────────────────────────────────
+   * The bolt glows; each milestone's year is a huge outline that fills as the bolt reaches it. */
+  .path-bolt {
+    filter: drop-shadow(0 0 6px var(--color-accent));
+  }
+
+  .path-year {
+    font-size: clamp(3.5rem, 2rem + 6vw, 8rem);
+    line-height: 0.85;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in oklch, var(--color-accent) 55%, transparent);
+    transition:
+      color 0.6s var(--ease-drift),
+      text-shadow 0.6s var(--ease-drift);
+  }
+
+  .path-item[data-lit] .path-year {
+    color: color-mix(in oklch, var(--color-accent) 22%, transparent);
+    -webkit-text-stroke-color: var(--color-accent);
+    text-shadow: 0 0 0.35em color-mix(in oklch, var(--color-accent) 35%, transparent);
+  }
+
+  /* ── Arsenal: the sealing circle ───────────────────────────────────────────
+   * Pointing at a group (in the circle or the list) lights its arc, seal and name. */
+  .arsenal-arc {
+    fill: var(--color-ash-200);
+    transition:
+      fill 0.4s var(--ease-drift),
+      opacity 0.4s var(--ease-drift);
+  }
+
+  .arsenal-name {
+    fill: var(--color-bone);
+  }
+
+  .arsenal-seal,
+  .arsenal-seal-glyph {
+    transition:
+      color 0.4s var(--ease-drift),
+      fill 0.4s var(--ease-drift),
+      opacity 0.4s var(--ease-drift);
+  }
+
+  .arsenal-seal-glyph {
+    fill: var(--color-ash-200);
+  }
+
+  .arsenal-core {
+    fill: var(--color-accent);
+    filter: drop-shadow(0 0 18px color-mix(in oklch, var(--color-accent) 60%, transparent));
+  }
+
+  .arsenal-circle[data-active] :is(.arsenal-arc, .arsenal-seal) {
+    opacity: 0.3;
+  }
+
+  .arsenal-circle[data-active="0"] :is(.arsenal-arc, .arsenal-seal)[data-arc="0"],
+  .arsenal-circle[data-active="1"] :is(.arsenal-arc, .arsenal-seal)[data-arc="1"],
+  .arsenal-circle[data-active="2"] :is(.arsenal-arc, .arsenal-seal)[data-arc="2"],
+  .arsenal-circle[data-active="3"] :is(.arsenal-arc, .arsenal-seal)[data-arc="3"] {
+    opacity: 1;
+    fill: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .arsenal-circle[data-active="0"] .arsenal-seal[data-arc="0"] .arsenal-seal-glyph,
+  .arsenal-circle[data-active="1"] .arsenal-seal[data-arc="1"] .arsenal-seal-glyph,
+  .arsenal-circle[data-active="2"] .arsenal-seal[data-arc="2"] .arsenal-seal-glyph,
+  .arsenal-circle[data-active="3"] .arsenal-seal[data-arc="3"] .arsenal-seal-glyph {
+    fill: var(--color-accent);
+  }
+}
