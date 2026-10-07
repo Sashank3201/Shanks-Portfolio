@@ -76,6 +76,9 @@ Authoring rules:
 - Every stroke that should draw carries `data-draw`; solid shapes use `fill-void` so they occlude
   what is behind them. `data-draw-fade` marks stroke-less details that fade in after the draw.
 - No `vector-effect`: it is not inherited and DrawSVG cannot measure it reliably.
+- Irregular detail comes from seeded generators in `lib/art/` (torn hems, hair locks, chain
+  links, cracks, the lightning bolt) — same seed, same drawing on server and client; the wind
+  blows from the right, so hair, coat tail, sash ends and bandages stream left.
 
 ### Choreography
 
