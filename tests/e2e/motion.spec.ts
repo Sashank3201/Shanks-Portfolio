@@ -34,6 +34,38 @@ test.describe("reduced motion", () => {
   });
 });
 
+test.describe("release mark", () => {
+  test("the logo crescent morphs into the horned mask and back", async ({ page }) => {
+    await page.goto("/");
+    const logo = page.locator("header .logo-mark");
+    const morph = logo.locator("[data-logo-morph]");
+    const release = page.getByRole("button", { name: "Release" });
+    await expect(morph).toHaveAttribute("data-shape", "crescent");
+    await expect(logo.locator(".logo-crescent")).toHaveCSS("opacity", "1");
+
+    await release.click();
+    await expect(morph).toHaveAttribute("data-shape", "mask");
+    // The morph layer hands back to the static mask once the shape has changed.
+    await expect(logo).not.toHaveAttribute("data-morphing", /.*/, { timeout: 5_000 });
+    await expect(logo.locator(".logo-mask")).toHaveCSS("opacity", "1");
+
+    await release.click();
+    await expect(morph).toHaveAttribute("data-shape", "crescent");
+    await expect(logo).not.toHaveAttribute("data-morphing", /.*/, { timeout: 5_000 });
+    await expect(logo.locator(".logo-crescent")).toHaveCSS("opacity", "1");
+  });
+
+  test("swaps without morphing under reduced motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    const logo = page.locator("header .logo-mark");
+
+    await page.getByRole("button", { name: "Release" }).click();
+    await expect(logo).not.toHaveAttribute("data-morphing", /.*/);
+    await expect(logo.locator(".logo-mask")).toHaveCSS("opacity", "1");
+  });
+});
+
 test.describe("navigation choreography", () => {
   test("the slash transition lands on the new page and releases the screen", async ({
     page,
@@ -86,6 +118,7 @@ test.describe("webgl stage", () => {
     await expect(page.locator("html")).toHaveAttribute("data-webgl", "fallback");
     await expect(page.locator(".stage")).toHaveCount(0);
     await expect(page.locator("[data-eclipse-anchor] > *").first()).toHaveCSS("opacity", "1");
+    await expect(page.locator("[data-stage-fallback]")).toHaveCSS("opacity", "1");
   });
 
   // Headless browsers rasterise in software, where the site deliberately keeps the CSS eclipse;
@@ -95,8 +128,9 @@ test.describe("webgl stage", () => {
     const html = page.locator("html");
     await expect(html).toHaveAttribute("data-webgl", "ready", { timeout: 20_000 });
     await expect(page.locator(".stage canvas")).toBeVisible();
-    // The CSS eclipse steps aside once WebGL draws (its anchor keeps positioning it).
+    // The CSS eclipse and spire step aside once WebGL draws (the anchor keeps positioning it).
     await expect(page.locator("[data-eclipse-anchor] > *").first()).toHaveCSS("opacity", "0");
+    await expect(page.locator("[data-stage-fallback]")).toHaveCSS("opacity", "0");
   });
 
   test("renders a frozen frame in static mode", async ({ page }) => {

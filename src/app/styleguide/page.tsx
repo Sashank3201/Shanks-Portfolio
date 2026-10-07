@@ -2,9 +2,16 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 
+import { Cleaver } from "@/components/illustrations/cleaver";
+import { CloakedFigure } from "@/components/illustrations/cloaked-figure";
 import { CrescentMark } from "@/components/illustrations/crescent-mark";
 import { EclipseFallback } from "@/components/illustrations/eclipse-fallback";
+import { Gate } from "@/components/illustrations/gate";
+import { HornedMask } from "@/components/illustrations/horned-mask";
 import { MaskGlyph } from "@/components/illustrations/mask-glyph";
+import { Seal } from "@/components/illustrations/seal";
+import { SpireSilhouette } from "@/components/illustrations/spire-silhouette";
+import { DrawOnScroll } from "@/components/motion/draw-on-scroll";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { KanjiIndex } from "@/components/ui/kanji-index";
 import { SlashLink } from "@/components/ui/slash-link";
@@ -112,6 +119,62 @@ export default function StyleguidePage() {
           with motion that explains rather than decorates.
         </p>
         <p className="label text-ash-400">Label · Geist Mono · 0.28em tracking</p>
+      </section>
+
+      <section aria-labelledby="sg-illustrations" className="space-y-8">
+        <h2 id="sg-illustrations" className="label text-ash-200">
+          Illustrations (Shinigami · Hollow)
+        </h2>
+        {[0, 1].map((realm) => (
+          <div
+            key={realm}
+            style={realmStyle(realm)}
+            className="grid grid-cols-2 items-end gap-10 rounded-2xl border border-ash-900 bg-abyss p-10 text-rim md:grid-cols-6"
+          >
+            <HornedMask className="w-full drop-shadow-[0_0_10px_var(--color-glow)]" />
+            <CloakedFigure className="w-full drop-shadow-[0_0_8px_var(--color-rim)]" />
+            <Cleaver className="mx-auto h-64" />
+            <Gate className="w-full" />
+            <SpireSilhouette className="h-48 w-full text-spirit-deep" />
+            <div className="flex gap-3">
+              <Seal glyph="技" className="size-16" />
+              <Seal glyph="刃" className="size-16" />
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <section aria-labelledby="sg-flames" className="space-y-8">
+        <h2 id="sg-flames" className="label text-ash-200">
+          Reiatsu flames (WebGL behind the art · CSS glow in front)
+        </h2>
+        <p className="max-w-prose text-ash-400">
+          They burn as the realm turns Hollow — press Release. Without WebGL, or under reduced
+          motion, only the glow remains. No background here, so the stage shows through.
+        </p>
+        <div className="mx-auto w-72 text-rim">
+          <CloakedFigure className="w-full drop-shadow-[0_0_8px_var(--color-rim)]" />
+        </div>
+      </section>
+
+      <section aria-labelledby="sg-draw" className="space-y-8">
+        <h2 id="sg-draw" className="label text-ash-200">
+          Draw on scroll (plays once · scrubbed)
+        </h2>
+        <div className="grid grid-cols-2 items-end gap-10 rounded-2xl border border-ash-900 bg-abyss p-10 text-rim md:grid-cols-4">
+          <DrawOnScroll>
+            <HornedMask className="w-full drop-shadow-[0_0_10px_var(--color-glow)]" />
+          </DrawOnScroll>
+          <DrawOnScroll>
+            <CloakedFigure className="w-full drop-shadow-[0_0_8px_var(--color-rim)]" />
+          </DrawOnScroll>
+          <DrawOnScroll scrub>
+            <Gate className="w-full" />
+          </DrawOnScroll>
+          <DrawOnScroll scrub>
+            <Cleaver className="mx-auto h-64" />
+          </DrawOnScroll>
+        </div>
       </section>
 
       <section aria-labelledby="sg-components" className="space-y-8">

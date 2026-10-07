@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 
 import { ErrorBoundary } from "@/components/providers/error-boundary";
 import { holdBoot } from "@/lib/boot/ready";
+import { measureFlames } from "@/lib/scene/measure-flames";
 import { sceneSignal } from "@/lib/scene/scene-signal";
 
 import { getScroll, requestStageFrame } from "./frame";
@@ -51,8 +52,8 @@ function setWebGLState(state: "ready" | "lost" | "failed") {
 
 /**
  * Mounts the WebGL stage behind the content (lazily, client-only) and keeps the scene informed
- * of the DOM: the hero eclipse anchor, document height and pointer. Until the first frame is
- * drawn — or forever, without WebGL — the CSS eclipse carries the look.
+ * of the DOM: the hero eclipse anchor, flame anchors, document height and pointer. Until the
+ * first frame is drawn — or forever, without WebGL — the CSS eclipse carries the look.
  */
 export function StageLoader() {
   const supported = useSyncExternalStore(subscribeNever, canRenderStage, () => false);
@@ -84,6 +85,8 @@ export function StageLoader() {
         sceneSignal.anchor = null;
       }
       sceneSignal.docHeight = document.documentElement.scrollHeight;
+      sceneSignal.flames = measureFlames(getScroll());
+      sceneSignal.flamesVersion++;
       requestStageFrame();
     };
 

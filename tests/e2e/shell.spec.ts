@@ -31,6 +31,10 @@ test.describe("site shell", () => {
       document.documentElement.style.getPropertyValue("--realm"),
     );
     expect(realm).toBe("1");
+    // The logo is already the horned mask: its static shapes follow data-release in CSS.
+    const logo = page.locator("header .logo-mark");
+    await expect(logo.locator(".logo-mask")).toHaveCSS("opacity", "1");
+    await expect(logo.locator(".logo-crescent")).toHaveCSS("opacity", "0");
   });
 
   test("reduce-motion toggle marks the document", async ({ page }) => {

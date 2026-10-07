@@ -18,6 +18,7 @@ import {
   type QualitySettings,
 } from "./quality";
 import { AshField } from "./scenes/ash-field";
+import { Flames } from "./scenes/flames";
 import { Sky } from "./scenes/sky";
 
 const DebugTools = lazy(() => import("./debug"));
@@ -64,6 +65,7 @@ export default function Stage({ onReady, onContextLost, onContextRestored }: Sta
       <Clock onFirstFrame={onReady} />
       <Sky octaves={quality.octaves} vignette={!quality.postprocessing} />
       <AshField count={quality.particles} />
+      <Flames octaves={quality.octaves} />
       {quality.postprocessing ? (
         <Effects chromaticAberration={quality.chromaticAberration} />
       ) : null}

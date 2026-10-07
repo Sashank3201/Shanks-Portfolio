@@ -357,12 +357,64 @@
     opacity: 1;
   }
 
-  /* Once WebGL draws the eclipse, the CSS one steps aside (the anchor still positions it). */
-  [data-eclipse-anchor] > * {
+  /* Once WebGL draws the sky, the CSS eclipse and spire step aside (the anchor still positions
+   * the eclipse). */
+  [data-eclipse-anchor] > *,
+  [data-stage-fallback] {
     transition: opacity 0.8s var(--ease-drift);
   }
 
-  :root[data-webgl="ready"] [data-eclipse-anchor] > * {
+  :root[data-webgl="ready"] :is([data-eclipse-anchor] > *, [data-stage-fallback]) {
     opacity: 0;
+  }
+
+  /* Spirit-lit stone in the Shinigami realm, near-black maroon in the Hollow. */
+  .spire-fallback {
+    color: color-mix(
+      in oklch,
+      color-mix(in oklch, var(--color-spirit-deep) 58%, var(--color-abyss)),
+      var(--color-maroon) calc(var(--realm) * 100%)
+    );
+  }
+}
+
+@layer components {
+  /* ── Reiatsu flame anchors ─────────────────────────────────────────────────
+   * A soft glow in front of the art: the hot core at the neck, wrists and ankles. With WebGL the
+   * stage also lights licking flames at the same points, behind the silhouette (off under reduced
+   * motion, where this static glow stands alone). Both only burn as the realm turns Hollow. */
+  .flame-anchor {
+    fill: color-mix(in oklch, var(--color-reiatsu) 55%, transparent);
+    filter: blur(6px);
+    opacity: calc(var(--realm) * var(--realm));
+    transition: opacity 0.6s var(--ease-drift);
+  }
+}
+
+@layer components {
+  /* ── Logo: crescent ↔ horned mask ──────────────────────────────────────────
+   * The static shapes follow data-release, so the right one paints before hydration (and is all
+   * there is under reduced motion). While Release changes, LogoMark's morph layer takes over. */
+  .logo-crescent,
+  .logo-mask {
+    transition: opacity 0.4s var(--ease-drift);
+  }
+
+  .logo-mask,
+  :root[data-release] .logo-crescent {
+    opacity: 0;
+  }
+
+  :root[data-release] .logo-mask {
+    opacity: 1;
+  }
+
+  .logo-morph,
+  .logo-mark[data-morphing] :is(.logo-crescent, .logo-mask) {
+    visibility: hidden;
+  }
+
+  .logo-mark[data-morphing] .logo-morph {
+    visibility: visible;
   }
 }

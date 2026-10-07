@@ -54,16 +54,21 @@ lighter sky without the post-processing chunk. Reduced motion renders a single s
   crescent with the realm, the SDF spire with windows, outline and beam.
 - **Ash field** — screen-space point sprites; ash drifts down in the Shinigami realm, embers rise
   in the Hollow (flow is integrated on the CPU so direction changes never jump).
+- **Flames** — one instanced quad per `[data-flame-anchor]` (≤ 16), placed in document space
+  from rects the stage loader measures (`lib/scene/measure-flames.ts`) on resize, layout change
+  and route change, and scrolled in the vertex shader. The canvas sits behind the DOM, so the
+  flames are scaled to burn past the silhouette in front of them; intensity is realm².
 - **Composition** (`webgl/composition.ts`, unit-tested) maps scroll + the hero's
   `[data-eclipse-anchor]` rect to eclipse/spire placement, so the WebGL eclipse lands exactly
   where the CSS eclipse and the preloader ring are.
 - **Hand-off** — until the first frame (and forever without WebGL) the CSS eclipse carries the
   look; `html[data-webgl]` is `ready | fallback | lost | failed`.
 - **No GPU, no WebGL** — software rasterisers (SwiftShader, llvmpipe) and Save-Data keep the CSS
-  eclipse: a full-screen shader on the CPU would stall the main thread.
+  eclipse and the SVG spire (`[data-stage-fallback]`, same geometry as the SDF): a full-screen
+  shader on the CPU would stall the main thread.
 
 Query flags: `?static=1` (frozen, motion-free frames for visual tests), `?webgl=force` (run the
-stage even on software renderers — WebGL E2E tests), `?debug` (Leva + r3f-perf, lazy-loaded).
+stage even on software renderers — WebGL E2E tests), `?debug` (Leva + stats-gl, lazy-loaded).
 
 ## Performance (measured, gzip)
 
@@ -105,7 +110,7 @@ src/
   webgl/          stage, scenes, shaders (chunks + programs), hooks
   lab/            one folder per experiment
   content/        typed + Zod-validated content (single source of truth)
-  lib/            motion registry, SEO, env, utils
+  lib/            motion registry, scene signal + DOM measurement, SEO, env, utils
   stores/         zustand UI store
   styles/         globals.css (Tailwind v4 @theme tokens)
 tests/            e2e (Playwright + axe), setup
@@ -120,3 +125,7 @@ tests/            e2e (Playwright + axe), setup
   pmndrs postprocessing is WebGL-only. Shaders are TS template strings with shared chunks so
   the later port is mechanical.
 - **Typed content files + Zod** instead of a CMS — content errors fail the build.
+- **No r3f-perf** — its published source map lists a binary `.woff` as the original source
+  (`sourcesContent: null`), which panics Turbopack's dev source-map step ("invalid utf-8 …
+  index 11"). `?debug` uses drei's `StatsGl` plus Leva monitors for renderer counters instead.
+  A scan of every `.map` in `node_modules` found no other package with that pattern.

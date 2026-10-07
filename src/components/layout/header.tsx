@@ -1,9 +1,9 @@
-import { CrescentMark } from "@/components/illustrations/crescent-mark";
 import { TransitionLink } from "@/components/ui/transition-link";
 import { pageNav, sectionNav } from "@/content/navigation";
 import { profile } from "@/content/profile";
 
 import { HeaderShell } from "./header-shell";
+import { LogoMark } from "./logo-mark";
 import { RealmToggle } from "./realm-toggle";
 import { SiteMenu } from "./site-menu";
 
@@ -16,7 +16,7 @@ export function Header() {
           className="group pointer-events-auto inline-flex items-center gap-3 text-bone"
           aria-label={`${profile.name} — home`}
         >
-          <CrescentMark className="size-7 text-accent transition-transform duration-700 ease-reiatsu group-hover:rotate-[-24deg]" />
+          <LogoMark className="size-7 text-accent transition-transform duration-700 ease-reiatsu group-hover:rotate-[-24deg]" />
           <span className="hidden label text-bone sm:inline">{profile.name}</span>
         </TransitionLink>
 

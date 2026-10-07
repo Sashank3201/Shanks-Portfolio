@@ -30,19 +30,23 @@ export function ScrambleText({
   const ref = useRef<HTMLSpanElement>(null);
 
   useMotionGSAP(
-    ({ reduced }) => {
+    ({ reduced, contextSafe }) => {
       const element = ref.current;
       if (!element || reduced) return;
 
+      let active = true;
+      const decode = contextSafe(() => {
+        if (!active) return;
+        gsap.to(element, {
+          duration,
+          delay,
+          ease: "none",
+          overwrite: "auto",
+          scrambleText: { text, chars: KATAKANA_GLYPHS, revealDelay: 0.25, speed: 0.6 },
+        });
+      });
       const scramble = () => {
-        void loadScrambleText().then(() =>
-          gsap.to(element, {
-            duration,
-            delay,
-            ease: "none",
-            scrambleText: { text, chars: KATAKANA_GLYPHS, revealDelay: 0.25, speed: 0.6 },
-          }),
-        );
+        void loadScrambleText().then(decode);
       };
 
       if (trigger === "hover") {
@@ -52,6 +56,7 @@ export function ScrambleText({
         };
         parent.addEventListener("pointerenter", onEnter);
         return () => {
+          active = false;
           parent.removeEventListener("pointerenter", onEnter);
         };
       }
@@ -63,6 +68,9 @@ export function ScrambleText({
         delay,
         scrollTrigger: { trigger: element, start: "top 90%", once: true, onEnter: scramble },
       });
+      return () => {
+        active = false;
+      };
     },
     { scope: ref, dependencies: [text] },
   );

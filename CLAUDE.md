@@ -33,7 +33,7 @@ In cloud sessions use the pre-installed Chromium for E2E:
   `src/lib/client-bundle.test.ts` enforces this transitively, along with no Zod in the client.
 - First-visit-only motion (preloader, hero intro) lives in lazily imported sequence modules.
 - Query flags: `?static=1` (frozen frames), `?webgl=force` (WebGL on software renderers),
-  `?debug` (Leva + r3f-perf).
+  `?debug` (Leva + stats-gl).
 - Conventional Commits (`feat:`, `fix:`, `chore:` …) — enforced by commitlint.
 - Toolchain pins: TypeScript 5.9 (typescript-eslint does not support TS 7 yet) and ESLint 9
   (eslint-config-next's react/import/jsx-a11y plugins top out at ESLint 9).
