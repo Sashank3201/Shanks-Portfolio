@@ -1,0 +1,10 @@
+{
+  "$comment": "Glyphs bundled in the Noto Serif JP accent subset. Edit, then run `pnpm fonts:jp`. A unit test fails if source code uses a Japanese glyph that is missing here.",
+  "chars": [
+    { "name": "formal numerals", "value": "零壱弐参肆伍陸漆捌玖拾" },
+    { "name": "section labels", "value": "魂刃道技門序終" },
+    { "name": "words", "value": "解放虚死神月日蝕霊圧実験履歴迷界天衝牙" },
+    { "name": "punctuation", "value": "・ー「」、。〜" }
+  ],
+  "ranges": [{ "name": "katakana", "from": "30A1", "to": "30FA" }]
+}
