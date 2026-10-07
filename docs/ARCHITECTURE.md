@@ -58,9 +58,13 @@ lighter sky without the post-processing chunk. Reduced motion renders a single s
   from rects the stage loader measures (`lib/scene/measure-flames.ts`) on resize, layout change
   and route change, and scrolled in the vertex shader. The canvas sits behind the DOM, so the
   flames are scaled to burn past the silhouette in front of them; intensity is realm².
-- **Composition** (`webgl/composition.ts`, unit-tested) maps scroll + the hero's
-  `[data-eclipse-anchor]` rect to eclipse/spire placement, so the WebGL eclipse lands exactly
-  where the CSS eclipse and the preloader ring are.
+- **Composition** (`webgl/composition.ts`, unit-tested) maps the hero's `[data-eclipse-anchor]`
+  rect, the dive (`sceneSignal.dive`, scrubbed by the hero's pin) and the re-emergence
+  (`sceneSignal.emerge`) to eclipse/spire placement, so the WebGL eclipse lands exactly where the
+  CSS eclipse and the preloader ring are, swallows the screen during the dive, then rests.
+- **Pointer** pulls on the eclipse: the corona leans toward it and a "diamond ring" bead rides
+  the ring on its side. The moon is a true void: ash behind it is hidden (`sky-state.ts` shares
+  the moon circle with the ash layer).
 - **Hand-off** — until the first frame (and forever without WebGL) the CSS eclipse carries the
   look; `html[data-webgl]` is `ready | fallback | lost | failed`.
 - **No GPU, no WebGL** — software rasterisers (SwiftShader, llvmpipe) and Save-Data keep the CSS

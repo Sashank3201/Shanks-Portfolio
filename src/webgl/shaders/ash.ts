@@ -1,7 +1,8 @@
 /**
  * Ash and embers: screen-space point sprites. Each particle owns a seed (x, y, depth); position
  * is integrated from a CPU-accumulated flow so the direction can reverse smoothly — ash drifts
- * down in the Shinigami realm, embers rise in the Hollow.
+ * down in the Shinigami realm, embers rise in the Hollow. Motes behind the moon are hidden by
+ * it; only the nearest drift across its face.
  */
 export const ashVertexShader = /* glsl */ `
 attribute vec3 aSeed;
@@ -12,6 +13,8 @@ uniform float uScroll;
 uniform float uRealm;
 uniform float uPixelRatio;
 uniform float uSize;
+uniform vec3 uMoon;    // centre (sky space) + radius
+uniform float uAspect;
 
 varying float vAlpha;
 varying float vDepth;
@@ -32,6 +35,10 @@ void main() {
 
   float twinkle = 0.55 + 0.45 * sin(uTime * (1.4 + aSeed.x * 3.0) + aSeed.y * 40.0);
   vAlpha = mix(0.22, 0.85, depth) * mix(0.7, twinkle, uRealm);
+
+  vec2 sky = vec2(clip.x * uAspect * 0.5, clip.y * 0.5);
+  float inMoon = 1.0 - smoothstep(uMoon.z * 0.9, uMoon.z, length(sky - uMoon.xy));
+  vAlpha *= 1.0 - inMoon * (1.0 - smoothstep(0.8, 0.92, depth));
   vDepth = depth;
 }
 `;

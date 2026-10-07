@@ -79,6 +79,10 @@ Authoring rules:
 
 ### Choreography
 
+- **Hero dive**: the name is set at ~88vw; letters near the pointer lift and ignite. Scrolling
+  pins the hero for one viewport while the camera falls into the eclipse — the letters scatter,
+  the spire sinks, the moon swallows the screen — and About arrives out of the dark as the
+  eclipse re-emerges at rest. Reduced motion: no pin, a still hero.
 - **Draw on scroll** (`DrawOnScroll`): strokes draw in a stagger as the art enters (or scrubbed
   to scroll), then fills settle in. Lone filled details (eyes) are visible first — something
   watches from the dark before the figure arrives. Complete without JS and under reduced motion.

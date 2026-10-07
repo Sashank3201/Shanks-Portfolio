@@ -418,3 +418,36 @@
     visibility: visible;
   }
 }
+
+@layer components {
+  /* ── Hero name ─────────────────────────────────────────────────────────────
+   * Set to fill ~88% of the viewport width whatever the name's length (--name-chars). Letters
+   * near the pointer ignite toward the realm accent (--ignite, driven per letter by HeroName). */
+  .hero-name {
+    font-size: min(calc(88vw / (var(--name-chars) * 0.5)), 26rem);
+    line-height: 0.8;
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+  }
+
+  .hero-char {
+    --ignite: 0;
+    color: color-mix(in oklch, var(--color-bone), var(--color-accent) calc(var(--ignite) * 80%));
+    text-shadow: 0 0 calc(var(--ignite) * 0.2em)
+      color-mix(in oklch, var(--color-accent) calc(var(--ignite) * 70%), transparent);
+  }
+
+  /* The scroll cue: a bead of light dropping down a thread. */
+  .scroll-cue {
+    animation: scroll-cue 1.8s var(--ease-drift) infinite;
+  }
+
+  @keyframes scroll-cue {
+    from {
+      translate: 0 -100%;
+    }
+    to {
+      translate: 0 200%;
+    }
+  }
+}

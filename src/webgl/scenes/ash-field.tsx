@@ -2,7 +2,7 @@
 
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import { AdditiveBlending, Color, type ShaderMaterial } from "three";
+import { AdditiveBlending, Color, Vector3, type ShaderMaterial } from "three";
 
 import { PALETTE } from "@/lib/palette";
 import { realmSignal } from "@/lib/realm/realm-signal";
@@ -11,6 +11,7 @@ import { isMotionReduced } from "@/stores/ui-store";
 
 import { FROZEN_TIME, getScroll, seededRandom } from "../frame";
 import { ashFragmentShader, ashVertexShader } from "../shaders/ash";
+import { skyState } from "../sky-state";
 
 function createAshUniforms() {
   return {
@@ -20,6 +21,8 @@ function createAshUniforms() {
     uRealm: { value: 0 },
     uPixelRatio: { value: 1 },
     uSize: { value: 2.2 },
+    uMoon: { value: new Vector3() },
+    uAspect: { value: 1 },
     uAsh: { value: new Color(PALETTE.ash200) },
     uEmber: { value: new Color(PALETTE.ember) },
     uReiatsu: { value: new Color(PALETTE.reiatsu) },
@@ -59,6 +62,8 @@ export function AshField({ count }: { count: number }) {
     u.uScroll.value = calm ? 0 : getScroll() / state.size.height;
     u.uRealm.value = realm;
     u.uPixelRatio.value = state.viewport.dpr;
+    u.uMoon.value.set(skyState.moonX, skyState.moonY, skyState.moonRadius);
+    u.uAspect.value = skyState.aspect;
   });
 
   return (

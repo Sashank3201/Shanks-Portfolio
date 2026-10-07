@@ -14,7 +14,12 @@ void main() {
 /**
  * The sky: void gradient, domain-warped smoke lit by the eclipse, the eclipse itself (corona,
  * streamers, ring, limb and the occluding moon that swings round into a crescent as the realm
- * turns), the spire with its windows and outline, and the beam rising from its needle.
+ * turns), the spire with its windows and outline, the beam rising from its needle, and a low
+ * mist in front of it all.
+ *
+ * The pointer pulls on the eclipse: the corona leans toward it and a white-hot "diamond ring"
+ * bead rides the ring on its side. During the hero's dive (uDive) the moon centres itself so it
+ * swallows the screen.
  *
  * Space: origin at the viewport centre, y up, 1 unit = viewport height (see composition.ts).
  */
@@ -24,6 +29,7 @@ uniform float uAspect;
 uniform float uRealm;
 uniform vec3 uEclipse;      // centre.xy, radius
 uniform float uEclipseReveal;
+uniform float uDive;
 uniform vec4 uSpire;        // x, baseY, scale, visibility
 uniform float uBeam;
 uniform float uClouds;
@@ -76,28 +82,51 @@ void main() {
   vec3 smoke = mix(vec3(0.01, 0.01, 0.016), glowColor * 0.32, lit);
   col = mix(col, smoke, density * 0.92);
 
-  // Corona: a soft halo plus fine radial streamers, thinning as the realm turns.
+  // The pointer in sky space, and which side of the eclipse faces it.
+  vec2 pointerSky = vec2(uPointer.x * uAspect * 0.5, uPointer.y * 0.5);
+  vec2 toPointer = pointerSky - c;
+  float pointerDist = length(toPointer);
+  vec2 pointerDir = toPointer / max(pointerDist, 1e-4);
+  float pull = smoothstep(R * 0.2, R * 0.9, pointerDist) * (1.0 - smoothstep(R, R + 1.1, pointerDist) * 0.6);
+
+  // Corona: a soft halo plus fine radial streamers, thinning as the realm turns, and leaning
+  // longer and brighter toward the pointer.
   vec2 dir = d / max(r, 1e-4);
+  float facing = max(dot(dir, pointerDir), 0.0);
+  float lean = facing * facing * pull;
   float streak = fbm(vec3(dir * 2.3, t * 0.025 + r * 1.2));
   float outside = max(r - R, 0.0);
-  float halo = exp(-outside / (R * 0.2 + 0.02)) * (0.55 + 0.45 * (streak * 0.5 + 0.5));
+  float halo = exp(-outside / ((R * 0.2 + 0.02) * (1.0 + lean * 1.3))) * (0.55 + 0.45 * (streak * 0.5 + 0.5));
   float rays = pow(max(0.0, 0.5 + 0.5 * sin(ang * 38.0 + streak * 7.0)), 8.0);
-  float corona = halo * 0.8 + rays * exp(-outside / (R * 0.6 + 0.03)) * 0.28;
-  corona *= smoothstep(R * 0.97, R * 1.02, r) * uCorona * mix(1.0, 0.4, realm);
+  float corona = halo * 0.8 + rays * exp(-outside / ((R * 0.6 + 0.03) * (1.0 + lean * 2.2))) * 0.28;
+  corona *= smoothstep(R * 0.97, R * 1.02, r) * uCorona * mix(1.0, 0.4, realm) * (1.0 + lean * 0.5);
   // Smoke drifting in front of the corona dims it (the streaks seen across the ring).
   corona *= 1.0 - density * 0.55;
 
-  // The disc's bright limb, the ring, and the moon swinging from annulus to crescent.
+  // The disc's bright limb, the ring, and the moon swinging from annulus to crescent — centred
+  // as the dive completes, so the moon alone fills the screen (mirrored in sky-state.ts).
   vec2 moonOffset = mix(vec2(0.07, 0.05), vec2(-0.22, 0.12), smoothstep(0.15, 1.0, realm)) * R;
+  moonOffset *= 1.0 - smoothstep(0.4, 1.0, uDive);
   float moonRadius = R * mix(0.965, 0.95, realm);
   float moon = 1.0 - smoothstep(moonRadius - aa, moonRadius + aa, length(p - (c + moonOffset)));
   float disc = 1.0 - smoothstep(R - aa, R + aa, r);
   float ring = exp(-pow((r - R) / max(R * 0.014, aa), 2.0));
   float limb = disc * (1.0 - moon);
 
-  vec3 eclipse = rimColor * (ring * 1.2 + limb * 1.6) + glowColor * corona;
+  // Diamond ring: a white-hot bead on the ring facing the pointer, with a faint starburst.
+  vec2 beadPos = c + pointerDir * R;
+  vec2 fromBead = p - beadPos;
+  float beadDist = length(fromBead);
+  float bead = exp(-dot(fromBead, fromBead) / (R * R * 0.0045)) * (1.0 - moon);
+  float beadHalo = exp(-beadDist / (R * 0.16));
+  float spikes = pow(abs(cos(atan(fromBead.y, fromBead.x) * 2.0)), 80.0) * exp(-beadDist / (R * 0.7));
+  float diamond = (bead * 5.0 + beadHalo * 0.9 + spikes * 1.1) * pull;
+
+  vec3 eclipse = rimColor * (ring * 1.2 + limb * 1.6) + glowColor * (corona + diamond);
   col += eclipse * reveal;
-  col = mix(col, uVoid * 0.5, moon * reveal);
+  // The moon is a true void: nearly black, with the faintest earthshine at its edge.
+  float moonEdge = smoothstep(moonRadius * 0.7, moonRadius, length(p - (c + moonOffset)));
+  col = mix(col, vec3(0.002, 0.002, 0.004) + mix(uSpirit, uMaroon, realm) * 0.012 * moonEdge, moon * reveal);
 
   // The spire, its beam, windows and (in the Hollow) a glowing outline.
   float spireVisibility = clamp(uSpire.w, 0.0, 1.0);
@@ -140,6 +169,14 @@ void main() {
     float edge = 1.0 - smoothstep(0.0, aa * 2.0, abs(sd));
     col += uReiatsu * edge * realm * 1.4 * spireVisibility;
   }
+
+  // Foreground mist: a low band drifting faster than the smoke, in front of the spire's base,
+  // sinking away during the dive.
+  float mistBand = smoothstep(-0.18, -0.5, p.y + uDive * 0.35);
+  float mistNoise = fbm(vec3(p.x * 1.4 - t * 0.045 + uPointer.x * 0.06, p.y * 2.6, t * 0.03 + 7.0));
+  float mist = mistBand * smoothstep(-0.1, 0.55, mistNoise) * uClouds;
+  vec3 mistColor = mix(vec3(0.018, 0.018, 0.028), mix(uSpirit * 0.05, uMaroon * 0.55, realm), 0.6) + glowColor * lit * 0.08;
+  col = mix(col, mistColor, mist * 0.8);
 
   // Vignette (used when post-processing is off).
   float vig = smoothstep(1.25, 0.25, length((vUv - 0.5) * vec2(1.0, 1.15)) * 1.5);

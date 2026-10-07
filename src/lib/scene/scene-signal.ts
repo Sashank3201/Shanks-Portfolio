@@ -36,4 +36,8 @@ export const sceneSignal = {
    * then faded in by the hero intro so there is never a double eclipse.
    */
   eclipseReveal: 1,
+  /** 0…1 progress of the hero's pinned dive into the eclipse (home page only). */
+  dive: 0,
+  /** 0…1 progress of the eclipse re-emerging at rest after the dive. */
+  emerge: 0,
 };

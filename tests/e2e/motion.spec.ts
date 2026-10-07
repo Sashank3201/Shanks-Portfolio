@@ -34,6 +34,25 @@ test.describe("reduced motion", () => {
   });
 });
 
+test.describe("hero dive", () => {
+  test("pins the hero while the camera dives into the eclipse", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".pin-spacer > section[aria-labelledby='hero-title']")).toHaveCount(
+      1,
+    );
+    // Past the pin, the next chapter is reachable and the hero copy has gone.
+    await page.locator("#about").scrollIntoViewIfNeeded();
+    await expect(page.locator("#about-title")).toBeInViewport({ timeout: 5_000 });
+  });
+
+  test("keeps the hero in the flow under reduced motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.locator(".pin-spacer")).toHaveCount(0);
+  });
+});
+
 test.describe("release mark", () => {
   test("the logo crescent morphs into the horned mask and back", async ({ page }) => {
     await page.goto("/");
