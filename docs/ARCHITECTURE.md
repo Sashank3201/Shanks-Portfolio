@@ -54,6 +54,10 @@ lighter sky without the post-processing chunk. Reduced motion renders a single s
   crescent with the realm, the SDF spire with windows, outline and beam.
 - **Ash field** — screen-space point sprites; ash drifts down in the Shinigami realm, embers rise
   in the Hollow (flow is integrated on the CPU so direction changes never jump).
+- **Project planes** — Work covers register their DOM boxes (`lib/scene/plane-registry.ts`);
+  the stage paints each as live shader art (`shaders/project.ts`) exactly where its box is,
+  reading at most 6 rects per frame. Boxes go transparent once WebGL is ready; hover burns a
+  crimson version through from where the pointer entered.
 - **Flames** — one instanced quad per `[data-flame-anchor]` (≤ 16), placed in document space
   from rects the stage loader measures (`lib/scene/measure-flames.ts`) on resize, layout change
   and route change, and scrolled in the vertex shader. The canvas sits behind the DOM, so the

@@ -53,6 +53,39 @@ test.describe("hero dive", () => {
   });
 });
 
+test.describe("work gallery", () => {
+  test("pins as a sideways rail on wide screens, reachable from the keyboard", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, "the rail is a wide-screen layout");
+    await page.goto("/");
+    const gallery = page.locator("[data-layout='rail']");
+    await expect(gallery).toHaveCount(1);
+    await expect(page.locator(".pin-spacer [data-rail]")).toHaveCount(1);
+
+    // Focusing the first project's link brings its panel into view.
+    await page.getByRole("link", { name: /Eclipse/ }).focus();
+    await expect(page.locator("[data-panel]").first()).toBeInViewport({ timeout: 5_000 });
+  });
+
+  test("stays a stacked grid on phones and under reduced motion", async ({ page, isMobile }) => {
+    if (!isMobile) await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    await expect(page.locator("[data-panel]")).toHaveCount(4);
+    await expect(page.locator("[data-layout='rail']")).toHaveCount(0);
+  });
+
+  test("registers live covers when WebGL draws", async ({ page }) => {
+    await page.goto("/?webgl=force");
+    await expect(page.locator("html")).toHaveAttribute("data-webgl", "ready", { timeout: 20_000 });
+    await expect(page.locator("[data-plane]").first()).toHaveCSS(
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    );
+  });
+});
+
 test.describe("release mark", () => {
   test("the logo crescent morphs into the horned mask and back", async ({ page }) => {
     await page.goto("/");

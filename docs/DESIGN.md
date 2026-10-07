@@ -86,6 +86,10 @@ Authoring rules:
 - **Draw on scroll** (`DrawOnScroll`): strokes draw in a stagger as the art enters (or scrubbed
   to scroll), then fills settle in. Lone filled details (eyes) are visible first — something
   watches from the dark before the figure arrives. Complete without JS and under reduced motion.
+- **Work gallery**: wide screens pin the gallery and slide it sideways with the scroll; each
+  cover is a procedural scene (eclipse, cleaver, gate or mask with rim light and smoke) that
+  burns through to crimson from where the pointer enters, fringes splitting as the page moves.
+  Phones and reduced motion keep a stacked grid; without WebGL the SVG covers stand in.
 - **Release mark** (`LogoMark`): the header crescent morphs into the horned mask (MorphSVG,
   expo.inOut) as the colour runs to crimson; the eye slits open last. Reduced motion crossfades.
 - **Reiatsu flames**: licking crimson flames at the figure's neck, wrists and ankles, burning
