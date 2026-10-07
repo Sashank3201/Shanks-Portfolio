@@ -76,6 +76,15 @@ export function detectTier({
   return 2;
 }
 
+/**
+ * `?tier=1|2|3` pins the quality tier and switches off runtime adaptation — for QA and for
+ * capturing the full look on machines without a GPU (with `?webgl=force`).
+ */
+export function readForcedTier(search: string): QualityTier | null {
+  const match = /[?&]tier=([123])(?:&|$)/.exec(search);
+  return match ? (Number(match[1]) as QualityTier) : null;
+}
+
 export function readDeviceHints(renderer?: string): DeviceHints {
   const nav = navigator as Navigator & { deviceMemory?: number };
   return {

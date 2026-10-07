@@ -68,7 +68,8 @@ lighter sky without the post-processing chunk. Reduced motion renders a single s
   shader on the CPU would stall the main thread.
 
 Query flags: `?static=1` (frozen, motion-free frames for visual tests), `?webgl=force` (run the
-stage even on software renderers — WebGL E2E tests), `?debug` (Leva + stats-gl, lazy-loaded).
+stage even on software renderers — WebGL E2E tests), `?debug` (Leva + stats-gl, lazy-loaded), `?tier=1|2|3` (pin the quality tier, no runtime
+adaptation — e.g. to capture the full look with `?webgl=force` on a machine without a GPU).
 
 ## Performance (measured, gzip)
 

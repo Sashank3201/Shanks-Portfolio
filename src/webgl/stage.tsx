@@ -14,6 +14,7 @@ import {
   QUALITY,
   detectTier,
   readDeviceHints,
+  readForcedTier,
   readRenderer,
   type QualitySettings,
 } from "./quality";
@@ -35,11 +36,12 @@ export interface StageProps {
  * adapts to measured frame rate.
  */
 export default function Stage({ onReady, onContextLost, onContextRestored }: StageProps) {
+  const [forcedTier] = useState(() => readForcedTier(window.location.search));
   const [quality, setQuality] = useState<QualitySettings>(
-    () => QUALITY[detectTier(readDeviceHints())],
+    () => QUALITY[forcedTier ?? detectTier(readDeviceHints())],
   );
   const [dprScale, setDprScale] = useState(1);
-  const debug = typeof window !== "undefined" && /[?&]debug(=|&|$)/.test(window.location.search);
+  const debug = /[?&]debug(=|&|$)/.test(window.location.search);
 
   return (
     <Canvas
@@ -50,9 +52,10 @@ export default function Stage({ onReady, onContextLost, onContextRestored }: Sta
       camera={{ position: [0, 0, 6], fov: 45 }}
       onCreated={({ gl }) => {
         // Refine the tier once the actual GPU is known (e.g. software renderers → tier 1).
-        const renderer = readRenderer(gl.getContext());
-        const refined = detectTier(readDeviceHints(renderer));
-        if (refined < quality.tier) setQuality(QUALITY[refined]);
+        if (forcedTier === null) {
+          const refined = detectTier(readDeviceHints(readRenderer(gl.getContext())));
+          if (refined < quality.tier) setQuality(QUALITY[refined]);
+        }
 
         const canvas = gl.domElement;
         canvas.addEventListener("webglcontextlost", (event) => {
@@ -69,18 +72,20 @@ export default function Stage({ onReady, onContextLost, onContextRestored }: Sta
       {quality.postprocessing ? (
         <Effects chromaticAberration={quality.chromaticAberration} />
       ) : null}
-      <PerformanceMonitor
-        flipflops={3}
-        onDecline={() => {
-          setDprScale((scale) => Math.max(0.6, scale - 0.15));
-        }}
-        onIncline={() => {
-          setDprScale((scale) => Math.min(1, scale + 0.1));
-        }}
-        onFallback={() => {
-          setQuality(QUALITY[1]);
-        }}
-      />
+      {forcedTier === null ? (
+        <PerformanceMonitor
+          flipflops={3}
+          onDecline={() => {
+            setDprScale((scale) => Math.max(0.6, scale - 0.15));
+          }}
+          onIncline={() => {
+            setDprScale((scale) => Math.min(1, scale + 0.1));
+          }}
+          onFallback={() => {
+            setQuality(QUALITY[1]);
+          }}
+        />
+      ) : null}
       {debug ? (
         <Suspense fallback={null}>
           <DebugTools />

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { detectTier } from "./quality";
+import { detectTier, readForcedTier } from "./quality";
 
 const desktop = { coarsePointer: false, shortestScreenSide: 1080, cores: 8, memoryGb: 8 };
 
@@ -27,5 +27,18 @@ describe("quality tier detection", () => {
       1,
     );
     expect(detectTier({ ...desktop, renderer: "Mali-G52 MC2" })).toBe(1);
+  });
+});
+
+describe("forced tier", () => {
+  it("reads ?tier=1|2|3 from the query string", () => {
+    expect(readForcedTier("?tier=3")).toBe(3);
+    expect(readForcedTier("?webgl=force&tier=2")).toBe(2);
+  });
+
+  it("ignores absent or invalid values", () => {
+    expect(readForcedTier("")).toBeNull();
+    expect(readForcedTier("?tier=4")).toBeNull();
+    expect(readForcedTier("?tier=33")).toBeNull();
   });
 });
