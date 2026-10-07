@@ -5,6 +5,8 @@ import { useRef } from "react";
 import { gsap, SplitText } from "@/lib/motion/gsap";
 import { useMotionGSAP } from "@/lib/motion/use-motion-gsap";
 
+const UNREAD_OPACITY = 0.55;
+
 interface ScrollWordsProps {
   as?: "p" | "div" | "h2" | "h3";
   children: string;
@@ -34,7 +36,8 @@ export function ScrollWords({ as = "p", children, className }: ScrollWordsProps)
         onSplit: (self) =>
           gsap.fromTo(
             self.words,
-            { opacity: 0.16 },
+            // Unread words stay legible: 0.55 keeps bone-on-void above WCAG AA (≈5.4:1).
+            { opacity: UNREAD_OPACITY },
             {
               opacity: 1,
               ease: "none",

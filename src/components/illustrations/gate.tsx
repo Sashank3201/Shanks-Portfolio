@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import { useId, type SVGProps } from "react";
 
 const LATTICE_COLUMNS = [23, 46, 69, 92];
 const LATTICE_ROWS = [150, 195, 240, 285];
@@ -23,6 +23,8 @@ function Door({ side }: { side: "left" | "right" }) {
  * `data-door="left|right"` so the contact choreography can part them over the light behind.
  */
 export function Gate(props: SVGProps<SVGSVGElement>) {
+  const lightId = `${useId()}-light`;
+
   return (
     <svg
       viewBox="0 0 400 320"
@@ -36,7 +38,22 @@ export function Gate(props: SVGProps<SVGSVGElement>) {
       {...props}
     >
       <g>
-        <rect data-gate-light x={84} y={108} width={232} height={212} className="fill-rim/0" />
+        <defs>
+          <radialGradient id={lightId} cx="50%" cy="80%" r="70%">
+            <stop offset="0" stopColor="currentColor" stopOpacity={0.9} />
+            <stop offset="1" stopColor="currentColor" stopOpacity={0} />
+          </radialGradient>
+        </defs>
+        <rect
+          data-gate-light
+          x={84}
+          y={108}
+          width={232}
+          height={212}
+          fill={`url(#${lightId})`}
+          stroke="none"
+          opacity={0}
+        />
         <path data-draw d="M6 36C60 50 340 50 394 36L388 56C330 64 70 64 12 56Z" />
         <path data-draw d="M44 82L356 82L352 96L48 96Z" />
         <path data-draw d="M66 56L82 56L84 320L64 320Z" />
